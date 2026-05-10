@@ -121,12 +121,12 @@
                         @forelse($resultats ?? [] as $resultat)
                             <tr class="border-b hover:bg-slate-50">
                                 <td class="p-3">
-                                    {{ $resultat->patient->nom ?? '' }} {{ $resultat->patient->prenom ?? '' }}
+                                    {{ $resultat->nom }} {{ $resultat->prenom }}
                                 </td>
                                 <td class="p-3">{{ $resultat->commentaire }}</td>
-                                <td class="p-3">{{ $resultat->created_at->format('d/m/Y') }}</td>
+                                <td class="p-3">{{ \Carbon\Carbon::parse($resultat->date_resultat)->format('d/m/Y') }}</td>
                                 <td class="p-3">
-                                    <a href="{{ asset('storage/'.$resultat->fichier_pdf) }}" target="_blank" class="text-indigo-600 font-bold">
+                                    <a href="{{ asset($resultat->fichier_pdf) }}" target="_blank" class="text-indigo-600 font-bold">
                                         Voir PDF
                                     </a>
                                 </td>
@@ -151,9 +151,9 @@
                 @forelse($rendezvous ?? [] as $rdv)
                     <div class="p-5 rounded-2xl border hover:shadow-md transition">
                         <h3 class="font-bold text-lg text-slate-800">
-                            {{ $rdv->patient->nom ?? '' }} {{ $rdv->patient->prenom ?? '' }}
+                            {{ $rdv->nom }} {{ $rdv->prenom }}  
                         </h3>
-                        <p class="text-slate-500">📅 {{ $rdv->date_rdv ?? $rdv->date ?? '' }}</p>
+                        <p class="text-slate-500">📅 {{ $rdv->date_rdv }}   🕰️{{ $rdv->heure_rdv }}</p>
                         <p class="text-slate-600 mt-2">{{ $rdv->motif ?? 'Aucun motif' }}</p>
                     </div>
                 @empty

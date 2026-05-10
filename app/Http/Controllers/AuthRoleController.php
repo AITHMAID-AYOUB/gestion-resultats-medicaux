@@ -68,28 +68,26 @@ class AuthRoleController extends Controller
     }
 
     public function loginAdmin(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
-
-    $admin = DB::table('administrateurs')
-        ->where('email', trim($request->email))
-        ->first();
-
-    if ($admin && Hash::check(trim($request->password), $admin->password)) {
-        session([
-            'admin_id' => $admin->id,
-            'admin_email' => $admin->email,
-            'role' => 'admin'
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
-        return redirect()->route('espace.admin');
-    }
+        $admin = DB::table('administrateurs')->where('email', trim($request->email))->first();
 
-    return back()->with('error', 'Email ou mot de passe incorrect.');
-}
+        if ($admin && Hash::check(trim($request->password), $admin->password)) {
+            session([
+                'admin_id' => $admin->id,
+                'admin_email' => $admin->email,
+                'role' => 'admin'
+            ]);
+
+            return redirect()->route('espace.admin');
+        }
+
+        return back()->with('error', 'Email ou mot de passe incorrect.');
+    }
 
     public function logout()
     {
@@ -99,8 +97,7 @@ class AuthRoleController extends Controller
     
     public function registerPatient(Request $request)
     {
-
-         $request->validate([
+        $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
             'email' => 'required|email|unique:patients,email',
@@ -125,5 +122,20 @@ class AuthRoleController extends Controller
         ]);
 
         return back()->with('success', 'Inscription réussie !');
+    }
+    public function annulerRdv($id)
+    {
+        if (!session('patient_id')) {
+            return redirect()->route('login.patient');
+        }
+
+        DB::table('rendez_vous')
+            ->where('id', $id)
+            ->where('patient_id', session('patient_id'))
+            ->update([
+                'statut' => 'annule'
+            ]);
+
+        return back()->with('success', 'Rendez-vous annulé avec succès.');
     }
 }
